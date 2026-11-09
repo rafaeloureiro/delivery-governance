@@ -94,6 +94,20 @@ The permission configuration was reviewed in the Databricks workspace. Independe
 - Improve data lineage documentation.
 - Expand analytical indicators and monitoring capabilities.
 
+## Project Screenshots
+
+### Executive Dashboard
+![Executive Dashboard](screenshots/dashboard-executive.png)
+
+### Data Quality Dashboard
+![Data Quality Dashboard](screenshots/dashboard-quality.png)
+
+### Pipeline Orchestration
+![Pipeline Job Execution](screenshots/pipeline-job.png)
+
+### Automated Tests
+![Automated Test Results](screenshots/automated-tests.png)
+
 ## Author
 
 **Rafael Pereira**
