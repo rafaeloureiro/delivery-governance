@@ -11,6 +11,8 @@ It processes synthetic food delivery orders, identifies data quality issues, sep
 
 The pipeline also includes automated validation tests, workflow orchestration and access governance through Unity Catalog.
 
+For a detailed explanation of the implementation, see the [Technical Architecture Documentation](docs/architecture.md).
+
 ## Architecture
 
 The solution follows three data processing layers:
