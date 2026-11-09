@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Documentação técnica e de governança do projeto Delivery Governance no Databricks.">
+<title>Delivery Governance | Documentação do projeto</title>
+<style>
+:root{
+  --bg:#0b1020;--panel:#121a2d;--panel2:#172238;--line:#26344e;
+  --text:#edf3ff;--muted:#a8b6cc;--accent:#67e8c0;--blue:#8ab4ff;
+  --yellow:#f6cf75;--red:#ff8f8f;--green:#8de0aa;--shadow:0 14px 40px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:radial-gradient(circle at 80% 0%,#172747 0,transparent 34%),var(--bg);color:var(--text);font:15px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;padding:28px 18px;border-right:1px solid var(--line);background:rgba(10,16,31,.88);backdrop-filter:blur(12px);overflow:auto}
+.brand{display:flex;gap:12px;align-items:center;margin:0 8px 30px}
+.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--blue));display:grid;place-items:center;color:#081321;font-weight:900;font-size:20px}
+.brand strong{display:block;font-size:14px;letter-spacing:.02em}
+.brand span{display:block;color:var(--muted);font-size:11px}
+.nav-label{margin:22px 10px 8px;color:#7385a2;font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:800}
+nav a{display:block;padding:9px 11px;margin:3px 0;border-radius:9px;color:#b9c7dc;font-size:13px}
+nav a:hover,nav a.active{background:#1a2942;color:var(--accent);text-decoration:none}
+.side-note{margin:28px 8px 0;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:11px}
+main{max-width:1180px;width:100%;padding:48px clamp(22px,5vw,76px) 80px;margin:0 auto}
+.eyebrow{color:var(--accent);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.18em}
+h1{font-size:clamp(36px,5vw,58px);line-height:1.05;letter-spacing:-.045em;margin:14px 0}
+h2{font-size:27px;letter-spacing:-.025em;margin:0 0 12px}
+h3{font-size:17px;margin:0 0 8px}
+p{color:#c4d0e2;margin:8px 0 14px}
+.lead{font-size:18px;max-width:780px;color:#c8d6e9}
+.hero{padding:32px 0 34px;border-bottom:1px solid var(--line)}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.pill{border:1px solid #31445f;border-radius:999px;padding:6px 11px;color:#b9c9df;font-size:11px}
+.status{color:var(--green);border-color:#315b4a}
+section{padding:42px 0;border-bottom:1px solid var(--line)}
+.section-kicker{color:var(--blue);font-size:11px;text-transform:uppercase;letter-spacing:.16em;font-weight:800;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin:20px 0}
+.card{grid-column:span 4;background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:var(--shadow)}
+.card.wide{grid-column:span 6}
+.card.full{grid-column:1/-1}
+.metric{font-size:34px;line-height:1.15;font-weight:800;letter-spacing:-.04em;color:var(--accent);margin:8px 0}
+.metric-label{font-size:12px;color:var(--muted)}
+.small{font-size:12px;color:var(--muted)}
+.callout{border:1px solid #38516d;border-left:3px solid var(--blue);background:#111e33;padding:15px 17px;border-radius:10px;margin:18px 0;color:#c9d7e9}
+.callout.warn{border-left-color:var(--yellow);border-color:#55482f;background:#211d17}
+.callout.good{border-left-color:var(--green);border-color:#315844;background:#12241e}
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0;align-items:stretch}
+.layer{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--panel);position:relative}
+.layer:not(:last-child):after{content:"→";position:absolute;right:-17px;top:42%;z-index:2;color:var(--accent);font-size:22px;font-weight:900}
+.layer .tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:800}
+.layer h3{margin:8px 0}
+.layer code,.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#a8d8ff;font-size:12px;overflow-wrap:anywhere}
+ul{padding-left:20px;color:#c4d0e2}
+li{margin:7px 0}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13px}
+th,td{padding:12px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:#91a7c5;font-size:10px;text-transform:uppercase;letter-spacing:.1em}
+td{color:#d2deed}
+.badge{display:inline-block;border-radius:6px;padding:3px 7px;font-size:10px;font-weight:800;background:#1c3b32;color:var(--green)}
+.badge.pending{background:#3d3320;color:var(--yellow)}
+.badge.info{background:#1c2f4a;color:var(--blue)}
+details{border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin:10px 0;background:#101a2b}
+summary{cursor:pointer;color:#e4edfa;font-weight:700}
+details p{margin-bottom:2px}
+.bar-wrap{height:12px;background:#26344b;border-radius:999px;overflow:hidden;margin:10px 0}
+.bar{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--blue))}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.glossary{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.term{padding:13px;border:1px solid var(--line);border-radius:10px;background:#101a2b}
+.term strong{color:var(--accent);display:block;font-size:13px}
+.term span{color:var(--muted);font-size:12px}
+footer{padding:30px 0;color:#71829d;font-size:11px}
+.toplink{float:right;font-size:11px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}nav{display:grid;grid-template-columns:repeat(2,1fr)}.side-note{display:none}main{padding-top:28px}.card{grid-column:span 6}}
+@media(max-width:560px){.card,.card.wide{grid-column:1/-1}.flow{grid-template-columns:1fr}.layer:not(:last-child):after{content:"↓";right:50%;top:auto;bottom:-21px}.glossary{grid-template-columns:1fr}table{display:block;overflow-x:auto;white-space:nowrap}nav{grid-template-columns:1fr 1fr}}
+@media print{.sidebar{display:none}.layout{display:block}body{background:white;color:#111}main{max-width:none;padding:10px}.card,.layer,details,.term{box-shadow:none;break-inside:avoid;background:white;color:#111}.lead,p,li,td{color:#333}section{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">DG</div><div><strong>DELIVERY GOVERNANCE</strong><span>Documentação do projeto</span></div></div>
+  <div class="nav-label">Navegação</div>
+  <nav id="nav">
+    <a href="#overview">Visão geral</a>
+    <a href="#architecture">Arquitetura</a>
+    <a href="#quality">Qualidade dos dados</a>
+    <a href="#layers">Camadas de dados</a>
+    <a href="#analytics">Indicadores e dashboard</a>
+    <a href="#security">Segurança e acessos</a>
+    <a href="#tests">Testes automatizados</a>
+    <a href="#orchestration">Orquestração</a>
+    <a href="#limitations">Limitações</a>
+    <a href="#roadmap">Próximos passos</a>
+    <a href="#glossary">Glossário</a>
+  </nav>
+  <div class="side-note">Projeto demonstrativo construído no Databricks. Os dados utilizados são sintéticos e não representam pedidos reais.</div>
+</aside>
+
+<main>
+<header class="hero" id="overview">
+  <div class="eyebrow">Engenharia de dados · Qualidade · Governança</div>
+  <h1>Delivery<br><span style="color:var(--accent)">Governance</span></h1>
+  <p class="lead">Um projeto demonstrativo de organização, validação, transformação e disponibilização de dados de uma operação de delivery, com controles de acesso, proteção de informações pessoais, testes automatizados e indicadores operacionais.</p>
+  <div class="hero-meta">
+    <span class="pill status">Estrutura principal implementada</span>
+    <span class="pill">Plataforma: Databricks</span>
+    <span class="pill">Armazenamento: Delta</span>
+    <span class="pill">Catálogo: delivery_governance</span>
+    <span class="pill status">10 testes automatizados aprovados</span>
+  </div>
+</header>
+
+<section>
+  <div class="section-kicker">01 · Resumo executivo</div>
+  <h2>O que este projeto demonstra</h2>
+  <p>O projeto parte de uma base de pedidos simulados e percorre um fluxo organizado em três camadas. Primeiro, os dados originais são preservados. Depois, os registros são avaliados e separados conforme regras de qualidade. Por fim, os dados aprovados alimentam indicadores consolidados e visualizações para análise.</p>
+  <div class="grid">
+    <div class="card"><div class="metric">100</div><div class="metric-label">Pedidos sintéticos gerados</div></div>
+    <div class="card"><div class="metric">95</div><div class="metric-label">Registros aprovados na validação</div></div>
+    <div class="card"><div class="metric">5</div><div class="metric-label">Registros rejeitados, com motivos identificados</div></div>
+  </div>
+  <div class="callout good"><strong>Resultado principal:</strong> os dados foram organizados nas camadas Bronze, Silver e Gold. Foram criadas tabelas de pedidos válidos e rejeitados, indicadores operacionais e tabelas de resumo da qualidade. O projeto também inclui uma visualização analítica com CPF e e-mail mascarados, um dashboard com duas abas e uma suíte independente de 10 testes automatizados, todos aprovados na execução registrada.</div>
+</section>
+
+<section id="architecture">
+  <div class="section-kicker">02 · Arquitetura</div>
+  <h2>Fluxo de dados</h2>
+  <p>A arquitetura utiliza uma organização em camadas. Cada etapa tem uma responsabilidade clara, facilitando a rastreabilidade e a manutenção do processo.</p>
+  <div class="flow">
+    <div class="layer"><div class="tag">Camada 1</div><h3>Bronze</h3><p>Preserva os dados recebidos, inclusive os registros que contêm problemas.</p><div class="code">bronze.pedidos_raw</div></div>
+    <div class="layer"><div class="tag">Camada 2</div><h3>Silver</h3><p>Armazena separadamente os registros aprovados e os rejeitados pela validação.</p><div class="code">silver.pedidos_validos<br>silver.pedidos_rejeitados</div></div>
+    <div class="layer"><div class="tag">Camada 3</div><h3>Gold</h3><p>Disponibiliza indicadores operacionais e tabelas consolidadas para análise.</p><div class="code">gold.indicadores_delivery<br>gold.qualidade_resumo<br>gold.qualidade_por_motivo</div></div>
+  </div>
+  <div class="callout"><strong>Por que separar em camadas?</strong> A separação ajuda a preservar a origem, explicitar as regras de tratamento e disponibilizar dados preparados para consumo analítico sem misturar responsabilidades.</div>
+  <h3>Componentes utilizados</h3>
+  <ul>
+    <li><strong>Databricks:</strong> ambiente de desenvolvimento e processamento de dados.</li>
+    <li><strong>PySpark:</strong> interface Python utilizada para transformar os dados com o mecanismo Apache Spark.</li>
+    <li><strong>Delta Lake:</strong> formato de armazenamento utilizado nas tabelas do projeto.</li>
+    <li><strong>Unity Catalog:</strong> camada de organização e controle de acesso aos dados.</li>
+  </ul>
+</section>
+
+<section id="quality">
+  <div class="section-kicker">03 · Qualidade dos dados</div>
+  <h2>Validação e tratamento</h2>
+  <p>Foram gerados 100 pedidos sintéticos. Para demonstrar o processo de qualidade, cinco registros receberam problemas intencionais, um problema por registro. As regras identificam esses casos e separam os dados aprovados dos rejeitados.</p>
+  <div class="grid">
+    <div class="card wide">
+      <h3>Distribuição após validação</h3>
+      <div class="metric">95% <span style="font-size:14px;color:var(--muted);font-weight:500">aprovados</span></div>
+      <div class="bar-wrap"><div class="bar" style="width:95%"></div></div>
+      <div class="legend"><span><i class="dot" style="background:var(--accent)"></i>95 aprovados</span><span><i class="dot" style="background:var(--yellow)"></i>5 rejeitados</span></div>
+    </div>
+    <div class="card wide">
+      <h3>Regras aplicadas</h3>
+      <ul>
+        <li>Valor do pedido deve ser maior que zero.</li>
+        <li>E-mail do cliente deve estar preenchido.</li>
+        <li>Status deve pertencer aos valores reconhecidos.</li>
+        <li>Restaurante deve estar preenchido.</li>
+        <li>Identificador do cliente deve estar preenchido.</li>
+      </ul>
+    </div>
+  </div>
+  <h3>Ocorrências inseridas para teste</h3>
+  <table>
+    <thead><tr><th>Problema</th><th>Campo afetado</th><th>Quantidade</th><th>Tratamento</th></tr></thead>
+    <tbody>
+      <tr><td>Valor negativo</td><td><span class="code">valor_pedido</span></td><td>1</td><td>Registro direcionado à tabela de rejeitados.</td></tr>
+      <tr><td>E-mail ausente</td><td><span class="code">email</span></td><td>1</td><td>Registro direcionado à tabela de rejeitados.</td></tr>
+      <tr><td>Status não reconhecido</td><td><span class="code">status</span></td><td>1</td><td>Registro direcionado à tabela de rejeitados.</td></tr>
+      <tr><td>Restaurante ausente</td><td><span class="code">restaurante</span></td><td>1</td><td>Registro direcionado à tabela de rejeitados.</td></tr>
+      <tr><td>Identificador do cliente ausente</td><td><span class="code">cliente_id</span></td><td>1</td><td>Registro direcionado à tabela de rejeitados.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><strong>Rastreabilidade:</strong> a tabela de rejeitados mantém os indicadores de erro e os motivos associados a cada registro. Isso permite investigar por que um dado não foi aprovado, em vez de simplesmente descartá-lo.</div>
+</section>
+
+<section id="layers">
+  <div class="section-kicker">04 · Camadas de dados</div>
+  <h2>Objetos criados</h2>
+  <p>Os objetos abaixo estão organizados no catálogo <span class="code">delivery_governance</span>.</p>
+  <details open>
+    <summary>Bronze — dados de origem</summary>
+    <p><span class="code">delivery_governance.bronze.pedidos_raw</span></p>
+    <p>Contém os 100 registros originais simulados, incluindo os cinco registros com problemas inseridos intencionalmente.</p>
+  </details>
+  <details>
+    <summary>Silver — dados tratados e rejeitados</summary>
+    <p><span class="code">delivery_governance.silver.pedidos_validos</span> — 95 registros aprovados.</p>
+    <p><span class="code">delivery_governance.silver.pedidos_rejeitados</span> — 5 registros rejeitados, acompanhados dos indicadores e motivos de rejeição.</p>
+  </details>
+  <details>
+    <summary>Gold — dados preparados para análise</summary>
+    <p><span class="code">delivery_governance.gold.indicadores_delivery</span> — indicadores operacionais agregados por restaurante.</p>
+    <p><span class="code">delivery_governance.gold.qualidade_resumo</span> — resumo consolidado dos indicadores de qualidade.</p>
+    <p><span class="code">delivery_governance.gold.qualidade_por_motivo</span> — quantidade de registros rejeitados por motivo.</p>
+    <p><span class="code">delivery_governance.gold.pedidos_analiticos</span> — visualização baseada nos pedidos válidos, com CPF e e-mail apresentados de forma mascarada.</p>
+  </details>
+  <div class="callout"><strong>Observação:</strong> as tabelas foram criadas no formato Delta. A visualização analítica é uma camada de apresentação; sua existência, isoladamente, não impede o acesso às tabelas de origem. Esse controle depende também das permissões configuradas no catálogo.</div>
+</section>
+
+<section id="analytics">
+  <div class="section-kicker">05 · Indicadores e dashboard</div>
+  <h2>Visão consolidada da operação</h2>
+  <p>A tabela <span class="code">gold.indicadores_delivery</span> agrega os pedidos válidos por restaurante. Foram identificados cinco restaurantes na base processada.</p>
+  <table>
+    <thead><tr><th>Indicador</th><th>Significado</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code">total_pedidos</span></td><td>Quantidade de pedidos válidos por restaurante.</td></tr>
+      <tr><td><span class="code">faturamento_total</span></td><td>Soma dos valores dos pedidos válidos por restaurante.</td></tr>
+      <tr><td><span class="code">ticket_medio</span></td><td>Valor médio por pedido válido.</td></tr>
+      <tr><td><span class="code">pedidos_entregues</span></td><td>Quantidade de pedidos com status de entrega concluída.</td></tr>
+      <tr><td><span class="code">pedidos_cancelados</span></td><td>Quantidade de pedidos com status de cancelamento.</td></tr>
+    </tbody>
+  </table>
+  <h3>Dashboard delivery_analysis</h3>
+  <p>Foi construído um dashboard no Databricks com duas abas, utilizando os dados consolidados da camada Gold.</p>
+  <div class="grid">
+    <div class="card wide">
+      <span class="badge info">Aba 1</span>
+      <h3 style="margin-top:10px">Visão Executiva</h3>
+      <p>Apresenta indicadores gerais da operação, incluindo volume de pedidos, faturamento, ticket médio, taxa de entrega, taxa de cancelamento e quantidade de restaurantes.</p>
+    </div>
+    <div class="card wide">
+      <span class="badge info">Aba 2</span>
+      <h3 style="margin-top:10px">Qualidade e Observabilidade</h3>
+      <p>Apresenta o resumo da qualidade dos dados, a taxa de rejeição e a distribuição dos registros rejeitados por motivo.</p>
+    </div>
+  </div>
+  <div class="callout good"><strong>Publicação:</strong> o dashboard foi publicado e compartilhado com o grupo <span class="code">delivery_analysts</span>, com permissão <span class="code">Can View</span>. Os conjuntos de dados utilizados nas visualizações foram conferidos durante a construção.</div>
+  <div class="callout warn"><strong>Limite dos dados disponíveis nesta documentação:</strong> os valores individuais por restaurante não foram reproduzidos aqui. Os indicadores detalhados podem ser consultados diretamente no dashboard e na tabela Gold correspondente.</div>
+</section>
+
+<section id="security">
+  <div class="section-kicker">06 · Segurança e governança</div>
+  <h2>Controle de acesso e proteção de dados</h2>
+  <p>O projeto utiliza o Unity Catalog para organizar permissões. Foi criado o grupo <span class="code">delivery_analysts</span>, destinado a representar usuários com perfil de análise.</p>
+
+  <h3>Permissões configuradas</h3>
+  <table>
+    <thead><tr><th>Objeto</th><th>Permissão do grupo</th><th>Finalidade</th></tr></thead>
+    <tbody>
+      <tr><td>Catálogo <span class="code">delivery_governance</span></td><td><span class="badge">USE CATALOG</span></td><td>Permite utilizar o catálogo.</td></tr>
+      <tr><td>Esquema <span class="code">gold</span></td><td><span class="badge">USE SCHEMA</span></td><td>Permite utilizar o esquema Gold.</td></tr>
+      <tr><td><span class="code">gold.indicadores_delivery</span></td><td><span class="badge">SELECT</span></td><td>Permite consultar os indicadores operacionais.</td></tr>
+      <tr><td><span class="code">gold.qualidade_resumo</span></td><td><span class="badge">SELECT</span></td><td>Permite consultar os indicadores consolidados de qualidade.</td></tr>
+      <tr><td><span class="code">gold.qualidade_por_motivo</span></td><td><span class="badge">SELECT</span></td><td>Permite consultar a distribuição das rejeições por motivo.</td></tr>
+      <tr><td>Dashboard <span class="code">delivery_analysis</span></td><td><span class="badge">Can View</span></td><td>Permite visualizar o dashboard compartilhado.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Restrições nas camadas de origem</h3>
+  <table>
+    <thead><tr><th>Objeto</th><th>Estado do grupo</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td>Esquema <span class="code">bronze</span></td><td><span class="badge">Sem SELECT</span></td><td>O grupo não possui permissão de leitura no esquema.</td></tr>
+      <tr><td><span class="code">bronze.pedidos_raw</span></td><td><span class="badge">Sem permissão direta</span></td><td>Não foi identificada concessão direta de acesso à tabela.</td></tr>
+      <tr><td>Esquema <span class="code">silver</span></td><td><span class="badge">USE SCHEMA</span></td><td>O grupo pode utilizar o esquema, mas não possui SELECT concedido no esquema.</td></tr>
+      <tr><td><span class="code">silver.pedidos_rejeitados</span></td><td><span class="badge">Sem permissão direta</span></td><td>Não foi identificada concessão direta de acesso à tabela.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout good"><strong>Resultado da revisão administrativa:</strong> as permissões de leitura nas tabelas de origem foram retiradas do grupo. A leitura foi mantida nas três tabelas analíticas Gold necessárias ao dashboard. A configuração foi conferida na interface de permissões do catálogo.</div>
+
+  <h3>Mascaramento de informações pessoais</h3>
+  <p>A visualização <span class="code">gold.pedidos_analiticos</span> apresenta CPF (Cadastro de Pessoas Físicas) e e-mail em formato mascarado. A intenção é reduzir a exposição de informações pessoais em consultas analíticas.</p>
+  <div class="callout warn"><strong>Ressalva importante:</strong> o mascaramento na visualização não substitui o controle de acesso às tabelas subjacentes. O grupo de analistas não deve receber permissões de leitura sobre as tabelas originais que permitam contornar a apresentação mascarada.</div>
+
+  <h3>Estado da validação</h3>
+  <table>
+    <thead><tr><th>Verificação</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Grupo de analistas criado</td><td><span class="badge">Concluído</span></td></tr>
+      <tr><td>Permissões de leitura nas três tabelas Gold configuradas</td><td><span class="badge">Concluído</span></td></tr>
+      <tr><td>Permissões de leitura nas camadas Bronze e Silver revisadas e retiradas do grupo</td><td><span class="badge">Concluído</span></td></tr>
+      <tr><td>Compartilhamento do dashboard com o grupo</td><td><span class="badge">Concluído</span></td></tr>
+      <tr><td>Teste de acesso com uma identidade independente</td><td><span class="badge pending">Pendente</span></td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">O ambiente de trabalho utilizado possui apenas um usuário cadastrado para esta validação. Por isso, não foi possível testar a experiência com uma segunda identidade independente. As permissões foram inspecionadas administrativamente, mas o isolamento de acesso efetivo ainda não foi comprovado por um teste independente. Além disso, o compartilhamento do dashboard utiliza permissões individuais de dados: cada visualizador precisa ter acesso aos conjuntos de dados subjacentes.</div>
+</section>
+
+<section id="tests">
+  <div class="section-kicker">07 · Testes automatizados</div>
+  <h2>Verificações de qualidade e consistência</h2>
+  <p>Foi criado um segundo notebook, separado do processamento, para validar as tabelas já produzidas. Essa separação permite executar as verificações sem gerar novamente os dados ou reprocessar as camadas.</p>
+  <div class="grid">
+    <div class="card wide"><div class="metric">10/10</div><div class="metric-label">Testes aprovados na execução completa do notebook</div></div>
+    <div class="card wide"><div class="metric">0</div><div class="metric-label">Falhas observadas na execução completa</div></div>
+  </div>
+  <h3>Organização dos notebooks</h3>
+  <table>
+    <thead><tr><th>Notebook</th><th>Responsabilidade</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code">00_gerar_dados</span></td><td>Gera os dados sintéticos, introduz problemas de propósito, aplica as regras de qualidade e grava as camadas Bronze, Silver e Gold.</td></tr>
+      <tr><td><span class="code">01_testes_pipeline</span></td><td>Carrega as tabelas existentes e executa verificações independentes sobre quantidades, qualidade, integridade, proteção da visualização e cálculos dos indicadores.</td></tr>
+    </tbody>
+  </table>
+  <h3>Testes implementados</h3>
+  <table>
+    <thead><tr><th>Nº</th><th>Verificação</th><th>O que confere</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Quantidade de registros</td><td>100 registros na Bronze, 95 válidos, 5 rejeitados e 5 restaurantes representados na agregação de indicadores.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>2</td><td>Integridade entre Bronze e Silver</td><td>A soma dos registros válidos e rejeitados corresponde ao total recebido.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>3</td><td>Qualidade dos pedidos aprovados</td><td>Não há valores nulos ou vazios nos campos obrigatórios, nem valores de pedido menores ou iguais a zero.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>4</td><td>Status permitidos</td><td>Todos os pedidos aprovados usam um dos status reconhecidos pelo projeto.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>5</td><td>Consistência dos indicadores Gold</td><td>Os indicadores obrigatórios não são nulos, cada restaurante possui pedidos e as contagens de entregues e cancelados não excedem o total.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>6</td><td>Reconciliação Silver e Gold</td><td>A soma dos pedidos agregados na Gold corresponde aos pedidos válidos da Silver.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>7</td><td>Justificativas das rejeições</td><td>Todos os registros rejeitados possuem ao menos um motivo de rejeição.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>8</td><td>Estrutura da visualização analítica</td><td>As colunas originais de CPF e e-mail não aparecem na visualização, e as colunas mascaradas estão presentes.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>9</td><td>Cálculo do ticket médio</td><td>O ticket médio por restaurante corresponde ao faturamento dividido pela quantidade de pedidos, com tolerância de arredondamento.</td><td><span class="badge">Aprovado</span></td></tr>
+      <tr><td>10</td><td>Faturamento por restaurante</td><td>O faturamento agregado na Gold corresponde à soma dos valores na Silver para cada restaurante.</td><td><span class="badge">Aprovado</span></td></tr>
+    </tbody>
+  </table>
+  <div class="callout good"><strong>Resultado da execução:</strong> o relatório do notebook registrou 10 testes, 10 aprovados, 0 reprovados e resultado geral APROVADO. O relatório final é um resumo da execução, não um teste adicional.</div>
+  <div class="callout good"><strong>Evidência de reexecução:</strong> o notebook de processamento foi executado novamente. As contagens esperadas permaneceram em 100 registros na Bronze, 95 válidos e 5 rejeitados na Silver, e 5 restaurantes na agregação de indicadores Gold. A reconciliação confirmou 95 pedidos contabilizados na Gold. As gravações utilizam o modo <span class="code">overwrite</span>, que substitui os dados existentes em vez de acrescentar cópias a cada execução.</div>
+  <div class="callout warn"><strong>Escopo da evidência:</strong> a reexecução foi testada com os mesmos dados sintéticos e as gravações atuais. Isso demonstra comportamento repetível nesse cenário, mas não equivale a uma garantia contra falhas parciais, concorrência ou mudanças futuras no código. O teste de proteção verifica a estrutura da visualização, não as permissões efetivas de acesso às tabelas originais.</div>
+</section>
+
+<section id="orchestration">
+  <div class="section-kicker">08 · Orquestração</div>
+  <h2>Execução automatizada do pipeline</h2>
+  <p>O processamento e a validação foram organizados em um Job do Databricks. O Job coordena as tarefas e respeita a dependência configurada entre elas, evitando que os testes comecem antes da atualização das tabelas.</p>
+  <div class="flow" style="grid-template-columns:repeat(2,1fr)">
+    <div class="layer">
+      <span class="tag">Tarefa 1</span>
+      <h3>gerar_dados</h3>
+      <p>Executa o notebook <span class="code">00_gerar_dados</span>, gera os dados sintéticos e atualiza as tabelas Bronze, Silver e Gold.</p>
+      <span class="badge">Succeeded · 1min 05s</span>
+    </div>
+    <div class="layer">
+      <span class="tag">Tarefa 2</span>
+      <h3>testar_pipeline</h3>
+      <p>Executa o notebook <span class="code">01_testes_pipeline</span> depois da conclusão bem-sucedida da primeira tarefa.</p>
+      <span class="badge">Succeeded · 18s</span>
+    </div>
+  </div>
+  <div class="callout good"><strong>Execução mais recente registrada:</strong> o Job completo terminou com status <span class="code">Succeeded</span> em 1 minuto e 23 segundos. As duas tarefas também apresentaram status <span class="code">Succeeded</span>.</div>
+  <ul>
+    <li><strong>Ordem de execução:</strong> <span class="code">gerar_dados → testar_pipeline</span>.</li>
+    <li><strong>Dependência:</strong> a tarefa de testes depende da tarefa de geração dos dados.</li>
+    <li><strong>Computação:</strong> ambiente Serverless do Databricks.</li>
+    <li><strong>Forma de disparo validada:</strong> execução manual pelo comando <span class="code">Run now</span>.</li>
+  </ul>
+  <div class="callout warn"><strong>Escopo:</strong> a execução automatizada entre tarefas foi validada. Ainda não foi configurado um agendamento recorrente; portanto, o Job não inicia sozinho em horários definidos.</div>
+</section>
+
+<section id="limitations">
+  <div class="section-kicker">09 · Limitações e transparência</div>
+  <h2>O que foi validado — e o que não foi</h2>
+  <ul>
+    <li>Os dados são sintéticos e foram criados para fins de demonstração; não representam uma operação real.</li>
+    <li>Os totais confirmados são 100 registros na origem, 95 aprovados, 5 rejeitados e 5 restaurantes na agregação de indicadores.</li>
+    <li>A matriz de permissões do grupo de analistas foi revisada na interface administrativa do catálogo.</li>
+    <li>O grupo possui leitura nas três tabelas Gold utilizadas para análise e não possui permissão de leitura concedida nas camadas Bronze e Silver.</li>
+    <li>O dashboard foi compartilhado com o grupo, mas o acesso não foi testado por uma segunda identidade independente.</li>
+    <li>O mascaramento foi verificado estruturalmente na visualização analítica, mas não representa, sozinho, uma comprovação de proteção efetiva contra todos os caminhos de acesso aos dados originais.</li>
+    <li>A execução do Job foi validada manualmente. Não há agendamento recorrente configurado.</li>
+  </ul>
+  <p>Essas ressalvas fazem parte da documentação para diferenciar configuração, evidência observada e validação ainda necessária.</p>
+</section>
+
+<section id="roadmap">
+  <div class="section-kicker">10 · Evolução</div>
+  <h2>Próximos passos recomendados</h2>
+  <div class="grid">
+    <div class="card wide"><span class="badge pending">Prioridade alta</span><h3 style="margin-top:10px">Testar acesso com outro usuário</h3><p>Validar, com uma identidade sem privilégios administrativos e pertencente ao grupo, a consulta às tabelas Gold, a visualização do dashboard e o bloqueio de acesso às tabelas de origem.</p></div>
+    <div class="card wide"><span class="badge info">Próxima evolução</span><h3 style="margin-top:10px">Configurar um agendamento</h3><p>Definir dias e horários para iniciar o Job automaticamente, caso essa rotina seja necessária.</p></div>
+    <div class="card wide"><span class="badge info">Próxima evolução</span><h3 style="margin-top:10px">Aprimorar o relatório de testes</h3><p>Fazer o notebook calcular dinamicamente a quantidade de testes aprovados e reprovados, em vez de depender de totais fixos no relatório.</p></div>
+    <div class="card wide"><span class="badge info">Próxima evolução</span><h3 style="margin-top:10px">Documentar linhagem</h3><p>Registrar a origem e o caminho percorrido por cada tabela e visualização, facilitando a investigação de alterações e problemas.</p></div>
+    <div class="card wide"><span class="badge info">Próxima evolução</span><h3 style="margin-top:10px">Aprimorar a análise por restaurante</h3><p>Adicionar uma tabela ou gráfico com os valores detalhados de faturamento, pedidos, entregas e cancelamentos por restaurante.</p></div>
+    <div class="card wide"><span class="badge info">Próxima evolução</span><h3 style="margin-top:10px">Ampliar os cenários de testes</h3><p>Adicionar cenários para falhas de processamento, dados inesperados, reexecuções e mudanças nas regras de qualidade.</p></div>
+  </div>
+</section>
+
+<section id="glossary">
+  <div class="section-kicker">11 · Glossário</div>
+  <h2>Termos utilizados</h2>
+  <p>As siglas e expressões técnicas abaixo são explicadas para que a documentação também seja compreensível para pessoas de negócio.</p>
+  <div class="glossary">
+    <div class="term"><strong>Databricks</strong><span>Plataforma para engenharia, processamento e análise de dados.</span></div>
+    <div class="term"><strong>Apache Spark</strong><span>Mecanismo distribuído para processar grandes volumes de dados.</span></div>
+    <div class="term"><strong>PySpark</strong><span>Interface Python para trabalhar com o Apache Spark.</span></div>
+    <div class="term"><strong>Delta Lake</strong><span>Camada de armazenamento que adiciona recursos de confiabilidade e controle às tabelas de dados.</span></div>
+    <div class="term"><strong>Unity Catalog</strong><span>Recurso do Databricks para organizar, descobrir e controlar o acesso aos dados.</span></div>
+    <div class="term"><strong>Bronze, Silver e Gold</strong><span>Camadas que representam, respectivamente, dados de origem, dados tratados e dados preparados para análise.</span></div>
+    <div class="term"><strong>RBAC — Role-Based Access Control</strong><span>Controle de acesso baseado em funções ou grupos de usuários.</span></div>
+    <div class="term"><strong>ETL — Extract, Transform, Load</strong><span>Extração, transformação e carregamento de dados.</span></div>
+    <div class="term"><strong>SQL — Structured Query Language</strong><span>Linguagem utilizada para consultar e manipular bancos de dados.</span></div>
+    <div class="term"><strong>CPF — Cadastro de Pessoas Físicas</strong><span>Identificador de pessoa física utilizado no Brasil.</span></div>
+    <div class="term"><strong>Mascaramento</strong><span>Exibição de uma versão parcialmente ocultada de uma informação, reduzindo sua exposição.</span></div>
+    <div class="term"><strong>Catálogo</strong><span>Contêiner de nível superior que organiza esquemas e objetos de dados.</span></div>
+    <div class="term"><strong>Esquema</strong><span>Contêiner que organiza tabelas, visualizações e outros objetos dentro de um catálogo.</span></div>
+    <div class="term"><strong>Visualização (view)</strong><span>Consulta salva que apresenta dados de uma ou mais tabelas sem necessariamente duplicar os dados.</span></div>
+    <div class="term"><strong>Governança de dados</strong><span>Conjunto de práticas para assegurar organização, qualidade, segurança, responsabilidade e uso adequado dos dados.</span></div>
+    <div class="term"><strong>Indicador</strong><span>Métrica utilizada para acompanhar o desempenho de uma operação ou processo.</span></div>
+    <div class="term"><strong>Job</strong><span>Execução configurada no Databricks para coordenar tarefas de processamento em uma sequência definida.</span></div>
+    <div class="term"><strong>Serverless</strong><span>Modelo de computação em que a infraestrutura é gerenciada pela plataforma, sem necessidade de administrar diretamente os servidores.</span></div>
+    <div class="term"><strong>Dashboard</strong><span>Painel visual que reúne indicadores e gráficos para facilitar o acompanhamento de uma operação.</span></div>
+    <div class="term"><strong>Overwrite</strong><span>Modo de gravação que substitui os dados existentes no destino em vez de acrescentar novos registros.</span></div>
+  </div>
+</section>
+
+<footer>
+  <span>Delivery Governance · Documentação do projeto</span>
+  <a class="toplink" href="#overview">Voltar ao início ↑</a>
+  <p class="small">Documento demonstrativo. Atualize esta página sempre que a estrutura, as permissões ou os resultados do projeto forem alterados.</p>
+</footer>
+</main>
+</div>
+<script>
+const links=[...document.querySelectorAll('#nav a')];
+const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+entry.target.id));
+    }
+  });
+},{rootMargin:'-18% 0px -68% 0px'});
+sections.forEach(section=>observer.observe(section));
+</script>
+</body>
+</html>
