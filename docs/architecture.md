@@ -68,4 +68,95 @@ The pipeline identifies invalid records and stores them separately instead of si
 This approach provides:
 
 - Visibility into data quality issues.
-- Traceability of
+- Traceability of rejected records.
+- Separation between analytical data and invalid records.
+- A foundation for monitoring data reliability.
+
+The project includes a dedicated notebook with 10 automated validation tests.
+
+Latest execution results:
+
+| Metric | Result |
+|---|---:|
+| Total tests | 10 |
+| Passed | 10 |
+| Failed | 0 |
+| Overall result | Passed |
+
+## 4. Orchestration and Testing
+
+The pipeline execution is organized through a Databricks Job with two dependent tasks:
+
+1. `gerar_dados` — generates synthetic data and updates the pipeline tables.
+2. `testar_pipeline` — executes automated validation tests after the data generation task succeeds.
+
+The dependency ensures that tests run only after the pipeline execution is completed.
+
+Latest successful execution:
+
+| Task | Execution time | Status |
+|---|---:|---|
+| Data generation | 1m 05s | Succeeded |
+| Pipeline testing | 18s | Succeeded |
+| Total | 1m 23s | Succeeded |
+
+The Job is manually triggered. Recurring scheduling is not currently configured.
+
+## 5. Governance and Security
+
+Unity Catalog was used to configure and review data access permissions.
+
+The `delivery_analysts` group received:
+
+- `USE CATALOG` on the project catalog.
+- `USE SCHEMA` on the Gold schema.
+- `SELECT` on the three main Gold analytical tables.
+- `Can View` access to the published dashboard.
+
+Access to raw Bronze data and rejected Silver records was not granted to this group.
+
+A masked analytical view was also developed to demonstrate the protection of personally identifiable information.
+
+The permission configuration was reviewed in the Databricks workspace. Independent validation using a separate user identity remains pending.
+
+## 6. Analytics and Monitoring
+
+The project includes a published Databricks dashboard with two sections:
+
+### Executive Overview
+
+Provides operational indicators and delivery performance metrics.
+
+### Quality and Observability
+
+Provides visibility into data quality indicators and rejection reasons.
+
+The dashboard uses analytical datasets from the Gold layer.
+
+## 7. Implementation Scope and Limitations
+
+The project demonstrates the integration of data engineering, quality validation, orchestration, governance and analytics.
+
+Current limitations:
+
+- All records are synthetic.
+- Job execution is manually triggered.
+- Recurring scheduling is not configured.
+- Independent access validation with a separate identity remains pending.
+- The automated tests can be expanded to cover additional edge cases.
+
+## 8. Future Improvements
+
+Potential next steps include:
+
+- Configure scheduled pipeline execution.
+- Expand automated data quality coverage.
+- Validate permissions using a separate identity.
+- Improve data lineage documentation.
+- Expand operational indicators and monitoring.
+
+---
+
+**Project:** Delivery Governance  
+**Platform:** Databricks  
+**Author:** Rafael Pereira
